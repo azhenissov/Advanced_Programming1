@@ -1,12 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 
-	"github.com/azhenissov/Advanced_Programming1/Company"
+	"github.com/azhenissov/Advanced_Programming1/Bank"
 )
 
 func main() {
+
+	/*
+		-------------------Shapes----------
+	*/
 	//	//shapes := []Shapes.Shape{
 	//	//	Shapes.NewRectangle(4, 5),
 	//	//	Shapes.NewCircle(3),
@@ -20,6 +28,9 @@ func main() {
 	//	//	fmt.Printf("Perimeter: %.2f\n\n", shape.Perimeter())
 	//	//}
 	//
+	/*
+		-------------------- Library ----------------
+	*/
 	//	lib := &Library.Library{}
 	//	reader := bufio.NewReader(os.Stdin)
 	//
@@ -118,15 +129,90 @@ func main() {
 	//	for _, book := range books {
 	//		fmt.Printf("ID: %d | %s by %s\n", book.ID, book.Title, book.Author)
 	//	}
+	//
+	/*
+		---------------Company-----------------
+	*/
+	//company := Company.NewCompany()
+	//
+	//company.AddEmployee(1, Company.NewFullTimeEmployee(1, "Alice", 60000))
+	//company.AddEmployee(2, Company.NewPartTimeEmployee(2, "Bob", 80))
+	//company.AddEmployee(3, Company.NewFullTimeEmployee(3, "Charlie", 75000))
+	//
+	//fmt.Println("Company Employees:")
+	//for _, details := range company.ListEmployees() {
+	//	fmt.Println(details)
+	//}
 
-	company := Company.NewCompany()
+	/*
+		------------- Bank--------------------
+	*/
 
-	company.AddEmployee(1, Company.NewFullTimeEmployee(1, "Alice", 60000))
-	company.AddEmployee(2, Company.NewPartTimeEmployee(2, "Bob", 80))
-	company.AddEmployee(3, Company.NewFullTimeEmployee(3, "Charlie", 75000))
+	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Println("Company Employees:")
-	for _, details := range company.ListEmployees() {
-		fmt.Println(details)
+	account := Bank.BankAccount{1, "Anuar", 1000}
+
+	var transactions []string
+
+	for {
+		fmt.Println("===== Bank Menu =====")
+		fmt.Println("1. Deposit")
+		fmt.Println("2. Withdraw")
+		fmt.Println("3. Check Balance")
+		fmt.Println("4. Show Transactions")
+		fmt.Println("5. Exit")
+		fmt.Println("Choose option: ")
+
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+
+		switch input {
+		case "1":
+			fmt.Println("Enter Deposit amount: ")
+			amount := readFloat(reader)
+
+			err := account.Deposit(amount)
+			if err != nil {
+				fmt.Println("Error", err)
+			} else {
+				transactions = append(transactions, fmt.Sprintf(": %2.f$ to Account %s deposited successfully!", amount, account.Name))
+			}
+		case "2":
+			fmt.Println("Enter Withdraw amount: ")
+			amount := readFloat(reader)
+
+			err := account.Withdraw(amount)
+			if err != nil {
+				fmt.Println("Error", err)
+			} else {
+				transactions = append(transactions, fmt.Sprintf(": %2.f $ from Account %s withdrawd successfully!", amount, account.Name))
+			}
+
+		case "3":
+			fmt.Println("Current Balance: \n", account.GetBalance(), "$")
+
+		case "4":
+			if len(transactions) == 0 {
+				fmt.Println("No transactions found!")
+			}
+			if len(transactions) > 0 {
+				fmt.Println("Transactions:")
+				for i, t := range transactions {
+					fmt.Println("%d. %s\n", i+1, t)
+				}
+			}
+		case "5":
+			fmt.Println("Goodbye!")
+			return
+		default:
+			fmt.Println("Invalid option!")
+		}
+		fmt.Println("")
 	}
+}
+
+func readFloat(reader *bufio.Reader) float64 {
+	text, _ := reader.ReadString('\n')
+	value, _ := strconv.ParseFloat(strings.TrimSpace(text), 64)
+	return value
 }
